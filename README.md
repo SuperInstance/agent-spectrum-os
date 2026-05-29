@@ -36,3 +36,5 @@ python3 spectrum_os.py
 | 3 | Analyst + Operator | ❌ Rejected | Low alignment (0.14) |
 | 4 | Full research team | ✅ Approved | Coherent pipeline (0.69) |
 | 5 | Inject failing Builder | 🔴 Anomaly detected | Spectral gap drops 99% |
+
+Part of the [SuperInstance OpenConstruct](https://github.com/SuperInstance/OpenConstruct) ecosystem.
