@@ -1,67 +1,83 @@
-# agent-spectrum-os
+# agent-spectrum-os — Spectral Agent Operating System
 
-A proof-of-concept operating system where agents are scheduled, routed, and composed using spectral graph theory. Each agent IS its Laplacian — eigenvalues are identity, the Fiedler vector is routing, and conservation ratios are confidence.
+**Agents are Laplacians. Eigenvalues are identity. The Fiedler vector is routing. Conservation ratios are confidence.**
 
 ## What This Gives You
 
-- **Spectral fingerprinting**: register agents by the eigenvalues of their capability coupling graph
-- **Fiedler scheduling**: route tasks to agents using Fiedler vector partitioning of task-agent compatibility
-- **Laplacian composition**: merge agents by combining their Laplacians, check conservation before deploying
-- **Anomaly detection**: inject faults and detect degradation by observing spectral gap drops
+- **Spectral agents** — each agent *is* its Laplacian matrix, derived from capability coupling
+- **Spectral fingerprinting** — eigenvalues identify agents, spectral gap measures resilience
+- **Fiedler routing** — use the Fiedler vector for optimal task-to-agent routing
+- **Conservation ratios** — agent confidence derived from energy conservation in the spectral domain
+- **Spectral composition** — merge agents by merging their graphs, compose capabilities algebraically
 
 ## Quick Start
 
 ```bash
-pip install numpy
-python3 spectrum_os.py
+pip install agent-spectrum-os
 ```
 
-This runs 5 scenarios:
+```python
+from spectrum_os import ConservationAgent, SpectrumScheduler
 
-| # | Scenario | Outcome |
-|---|----------|---------|
-| 1 | Single task → Analyst agent | ✅ Routed correctly, conservation 1.0 |
-| 2 | Builder + Validator composition | ✅ Approved, alignment 0.67 |
-| 3 | Analyst + Operator composition | ❌ Rejected, alignment 0.14 |
-| 4 | Full research team (4 agents) | ✅ Approved, coherence 0.69 |
-| 5 | Inject failing Builder | 🔴 Anomaly detected, spectral gap drops 99% |
+# Create spectral agents
+agent_a = ConservationAgent(
+    name="rust-builder",
+    capabilities={"compilation": 0.9, "testing": 0.8, "docs": 0.3},
+    connections={"python-builder": 0.7},
+)
 
-## Architecture
+agent_b = ConservationAgent(
+    name="python-builder",
+    capabilities={"compilation": 0.6, "testing": 0.9, "docs": 0.8},
+    connections={"rust-builder": 0.7},
+)
 
+# Spectral fingerprint
+fp = agent_a.spectral_fingerprint
+print(f"Eigenvalues: {fp['eigenvalues']}")
+print(f"Spectral gap: {fp['spectral_gap']:.3f}")
+print(f"Fiedler value: {fp['fiedler_value']:.3f}")
+
+# Schedule tasks using spectral partitioning
+scheduler = SpectrumScheduler(agents=[agent_a, agent_b])
+assignment = scheduler.assign(task="run benchmarks")
+print(f"Assigned to: {assignment.agent}")
+print(f"Confidence: {assignment.confidence:.2f}")
+
+# Compose agents
+composed = agent_a.compose(agent_b)
+print(f"Combined capabilities: {composed.capabilities}")
 ```
-ConservationAgent          → capability graph → Laplacian → spectral fingerprint
-AgentSpectrumOS.register() → fingerprint the agent
-AgentSpectrumOS.schedule() → Fiedler routing on compatibility graph
-AgentSpectrumOS.compose()  → merge Laplacians, verify conservation
-detect_anomaly()           → inject fault, measure spectral gap change
-```
 
-### Key Concepts
+## API Reference
 
-| Concept | Role |
-|---------|------|
-| Laplacian | Agent's full capability structure as a spectral object |
-| Eigenvalues | Spectral fingerprint — identifies agent "shape" |
-| Conservation ratio | Confidence — how well-structured the agent's state is |
-| Fiedler vector | Routing — which agents should handle which tasks |
-| Spectral alignment | Compatibility — cosine similarity of eigenvalue spectra |
+### `ConservationAgent(name, capabilities, connections)`
+- `spectral_fingerprint` → eigenvalues, spectral_gap, fiedler_value
+- `compose(other)` → merged agent
+- `confidence()` → conservation ratio
+
+### `SpectrumScheduler(agents)`
+- `assign(task)` → spectral routing result
+- `partition(n_groups)` → Fiedler-based grouping
 
 ## How It Fits
 
-Part of the [SuperInstance OpenConstruct](https://github.com/SuperInstance/OpenConstruct) ecosystem. This is the experimental research layer on top of:
+A proof-of-concept from the [SuperInstance fleet](https://github.com/SuperInstance) exploring whether spectral graph theory can provide a principled foundation for agent identity and routing.
 
-- **agent-manifest-rs** — manifests provide the capability graphs that become Laplacians
-- **agent-native-language** — agents communicating purely through spectral messages
-- **agent-handshake-rs** — handshake protocol for establishing spectral communication channels
+- **[agent-grid](https://github.com/SuperInstance/agent-grid)** — Practical grid topology (this is the mathematical exploration)
+- **[captain](https://github.com/SuperInstance/captain)** — Fleet coordination
+- **[cluster-orchestrator](https://github.com/SuperInstance/cluster-orchestrator)** — Cluster scheduling
 
 ## Testing
 
-All 5 scenarios run as integration tests via `python3 spectrum_os.py`. Each scenario asserts expected outcomes (success/rejection/anomaly detection).
+```bash
+python -m pytest tests/
+```
 
 ## Installation
 
 ```bash
-pip install numpy
+pip install agent-spectrum-os
 ```
 
-Python 3 with NumPy. No other dependencies.
+Python 3.10+. Requires NumPy. MIT license.
